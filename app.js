@@ -4,8 +4,8 @@ if(process.env.NODE_ENV!="production"){
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-// const MONGO_URL="mongodb://127.0.0.1:27017/propertyrental";
-const dbUrl = process.env.ATLASDB_URL;
+const MONGO_URL="mongodb://127.0.0.1:27017/propertyrental";
+// const dbUrl = process.env.ATLASDB_URL;
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
@@ -28,7 +28,7 @@ main().then(()=>{
     console.log(err);
 })
 async function main(){
-    await mongoose.connect(dbUrl);
+    await mongoose.connect(MONGO_URL);
 }
 
 // app.get("/",(req,res)=>{
@@ -43,7 +43,7 @@ app.engine('ejs',ejsMate);
 app.use(express.static(path.join(__dirname,"/public")))
 
 const store = MongoStore.create({
-    mongoUrl: dbUrl,
+    mongoUrl: MONGO_URL,
     crypto:{
         secret: process.env.SECRET
     },
@@ -90,6 +90,10 @@ app.use("/listings",listingRouter);
 app.use("/listings/:id/reviews",reviewRouter);
 app.use("/",userRouter);
 // error handling
+
+app.get("/", (req, res) => {
+    res.render("home", { currUser: req.user });
+});
 
 app.all("*",(req,res,next)=>{
     next(new ExpressError("Page Not Found!",404));
