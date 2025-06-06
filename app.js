@@ -5,8 +5,8 @@ require("./init/passport"); // Ensure Passport strategies are configured
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const MONGO_URL="mongodb://127.0.0.1:27017/propertyrental";
-// const dbUrl = process.env.ATLASDB_URL;
+const dbUrl = process.env.ATLASDB_URL;
+const MONGO_URL= dbUrl;
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
