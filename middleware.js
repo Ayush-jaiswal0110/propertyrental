@@ -3,6 +3,14 @@ const Review = require("./models/review");
 const ExpressError = require("./utils/ExpressErr.js");
 const {listingSchema,reviewSchema} = require("./schema.js");
 
+module.exports.ensureLoggedIn = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+      req.flash("error", "You must be signed in to view that page.");
+      return res.redirect("/login");
+    }
+    next();
+  };
+  
 
 module.exports.isLoggedIn = (req,res,next) =>{
     if(!req.isAuthenticated()){

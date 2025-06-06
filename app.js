@@ -1,6 +1,7 @@
 if(process.env.NODE_ENV!="production"){
     require('dotenv').config();
 }
+require("./init/passport"); // Ensure Passport strategies are configured
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -85,6 +86,8 @@ app.use((req,res,next) => {
     res.locals.currUser = req.user;
     next();
 });
+const bookingRoutes = require("./routes/booking");
+app.use("/bookings", bookingRoutes);
 
 app.use("/listings",listingRouter);
 app.use("/listings/:id/reviews",reviewRouter);
@@ -109,6 +112,8 @@ app.use((err,req,res,next)=>{
     }
     res.status(statusCode).render("error.ejs",{statusCode,message});
 });
+
+
 
 app.listen(8080, ()=>{
     console.log("server is listeninig on 8080 port");

@@ -36,7 +36,18 @@ const listingSchema = new Schema({
       type: [Number],
       required: true
     }
-  }
+  },
+  roomsAcAvailable: {
+    type: Number,
+    required: true,
+    default: 5,
+  },
+  roomsNonAcAvailable: {
+    type: Number,
+    required: true,
+    default: 5,
+  },
+  
 });
 
 // mongoose middle ware , whenever we are deleting the listing the all the comments related to listing will also be deleted automatically 
