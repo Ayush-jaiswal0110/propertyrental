@@ -35,6 +35,12 @@
 }
 </style>
 <!-- <h2>All Listings</h2> -->
+ <% if (typeof location !== "undefined" && location !== "") { %>
+  <div class="alert alert-info mt-3">
+    Showing results for "<%= location %>"
+  </div>
+<% } %>
+
  <div id="filters">
   <div class="filter">
     <div><i class="fa-solid fa-fire"></i> </div>

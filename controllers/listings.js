@@ -3,11 +3,20 @@ const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapToken = process.env.MAP_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapToken });
 // index route
-module.exports.index = async(req,res)=>{
-    const allListings = await Listing.find({});
-    res.render("listings/index",{allListings});
- 
+module.exports.index = async (req, res) => {
+  const { location } = req.query;
+  let allListings;
+
+  if (location) {
+    // Use case-insensitive search
+    allListings = await Listing.find({ location: new RegExp(location, 'i') });
+  } else {
+    allListings = await Listing.find({});
+  }
+
+  res.render("listings/index", { allListings });
 };
+
 
 //Render new form 
 module.exports.renderNewForm = (req,res)=>{
@@ -28,7 +37,9 @@ module.exports.show=async(req,res)=>{
       req.flash("error","Listing you are requested does not exist");
       res.redirect("/listings");
     }
-    res.render("listings/show",{listing});
+    res.render("listings/show",{listing,
+         mapToken: process.env.MAP_TOKEN
+    });
 }
 
 // create listing rout function 

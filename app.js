@@ -6,7 +6,6 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const dbUrl = process.env.ATLASDB_URL;
-const MONGO_URL= dbUrl;
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
@@ -29,7 +28,7 @@ main().then(()=>{
     console.log(err);
 })
 async function main(){
-    await mongoose.connect(MONGO_URL);
+    await mongoose.connect(dbUrl); //dbUrl for atlas db 
 }
 
 // app.get("/",(req,res)=>{
@@ -44,7 +43,7 @@ app.engine('ejs',ejsMate);
 app.use(express.static(path.join(__dirname,"/public")))
 
 const store = MongoStore.create({
-    mongoUrl: MONGO_URL,
+    mongoUrl: dbUrl,
     crypto:{
         secret: process.env.SECRET
     },
@@ -81,6 +80,7 @@ passport.deserializeUser(User.deserializeUser());// deserialize user means to re
 
 //middileware to use the flash 
 app.use((req,res,next) => {
+     console.log("Current user:", req.user);  // Debug
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     res.locals.currUser = req.user;
@@ -95,7 +95,7 @@ app.use("/",userRouter);
 // error handling
 
 app.get("/", (req, res) => {
-    res.render("home", { currUser: req.user });
+    res.render("home");
 });
 
 app.all("*",(req,res,next)=>{
