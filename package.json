@@ -4,10 +4,12 @@
   },
   "name": "propertyrental",
   "version": "1.0.0",
-  "description": "it is the website for the selling and buying the property and also for rental. it is for the customer and the property owener",
-  "main": "index.js",
+  "description": "Airbnb-inspired property rentals with Express, EJS, MongoDB and an accessible photo tour.",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "preview": "node scripts/preview.js",
+    "test": "node --test tests/design.test.js"
   },
   "repository": {
     "type": "git",

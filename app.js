@@ -25,7 +25,7 @@ const reviewRouter = require("./routes/review.js");
 main().then(()=>{
     console.log("connect to db");
 }).catch((err)=>{
-    console.log(err);
+    console.error("Database connection failed:", err.name);
 })
 async function main(){
     await mongoose.connect(dbUrl); //dbUrl for atlas db 
@@ -42,6 +42,15 @@ app.use(methodOverride("_method"));
 app.engine('ejs',ejsMate);
 app.use(express.static(path.join(__dirname,"/public")))
 
+// A database-independent reference page for checking the assignment design.
+app.get("/design-reference", (req, res) => {
+    const listing = require("./init/referenceListing");
+    res.render("listings/show", {
+        listing, presentation: require("./utils/listingPresentation")(listing),
+        isReference: true, currUser: null, success: [], error: [], nearbyListings: require('./init/data').data.slice(0,8).map(item=>({...item,href:'/listings?location='+encodeURIComponent(item.location)}))
+    });
+});
+
 const store = MongoStore.create({
     mongoUrl: dbUrl,
     crypto:{
@@ -49,8 +58,8 @@ const store = MongoStore.create({
     },
     touchAfter: 24*3600,
 });
-store.on("error", () => {
-    console.log("Error in MONGO SESSION store ",err)
+store.on("error", (err) => {
+    console.error("Session store unavailable:", err.name);
 })
 const sessionOptions = {
     store,
@@ -80,10 +89,10 @@ passport.deserializeUser(User.deserializeUser());// deserialize user means to re
 
 //middileware to use the flash 
 app.use((req,res,next) => {
-     console.log("Current user:", req.user);  // Debug
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     res.locals.currUser = req.user;
+    res.locals.oauthProviders = {google:!!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),facebook:!!(process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET)};
     next();
 });
 const bookingRoutes = require("./routes/booking");
@@ -115,6 +124,7 @@ app.use((err,req,res,next)=>{
 
 
 
-app.listen(8080, ()=>{
-    console.log("server is listeninig on 8080 port");
+const port = Number(process.env.PORT || 8080);
+app.listen(port, ()=>{
+    console.log("Property Rental is listening on port " + port);
 });

@@ -36,14 +36,25 @@ router
  router.get("/logout", logout);
  
 
- // Google Authentication
+ function providerEnabled(provider) {
+  return (req,res,next) => {
+    const configured=provider==='google' ? process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET : process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET;
+    if(configured)return next();
+    req.flash('error','This sign-in provider is not configured. Please use your username and password.');
+    res.redirect('/login');
+  };
+}
+
+// Google Authentication
 router.get(
   "/auth/google",
+  providerEnabled("google"),
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 router.get(
   "/auth/google/callback",
+  providerEnabled("google"),
   passport.authenticate("google", {
     successRedirect: "/",
     failureRedirect: "/signup",
@@ -53,11 +64,13 @@ router.get(
 // Facebook Authentication
 router.get(
   "/auth/facebook",
+  providerEnabled("facebook"),
   passport.authenticate("facebook", { scope: ["email"] })
 );
 
 router.get(
   "/auth/facebook/callback",
+  providerEnabled("facebook"),
   passport.authenticate("facebook", {
     successRedirect: "/",
     failureRedirect: "/signup",

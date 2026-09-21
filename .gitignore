@@ -1,2 +1,7 @@
 .env
 node_modules/
+tmp/
+.env.*
+!.env.example
+*.log
+coverage/

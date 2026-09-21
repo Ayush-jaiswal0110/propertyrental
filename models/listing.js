@@ -13,6 +13,7 @@ const listingSchema = new Schema({
     url: String,
     filename: String,
   },
+  images: [{url: String, filename: String, room: String, caption: String}],
   price: Number,
   location: String,
   country: String,

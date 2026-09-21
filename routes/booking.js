@@ -7,10 +7,18 @@ const PDFDocument = require("pdfkit");
 const { isLoggedIn } = require("../middleware");
 const nodemailer = require("nodemailer");
 const streamBuffers = require("stream-buffers");
-router.post("/:id/book", isLoggedIn, async (req, res) => {
+router.post("/:id/book", isLoggedIn, require("../utils/wrapAsync")(async (req, res) => {
   const listing = await Listing.findById(req.params.id);
   const user = await User.findById(req.user._id);
   const { checkIn, checkOut, roomType } = req.body;
+  if (!listing) { req.flash('error','Property not found'); return res.redirect('/listings'); }
+  if (String(listing.owner) === String(req.user._id)) {
+    req.flash('error','You cannot book your own property'); return res.redirect('/listings/'+listing._id);
+  }
+  if (!['AC','Non-AC'].includes(roomType) || !require('../utils/bookingValidation').validateBookingDates(checkIn,checkOut)) {
+    req.flash('error','Choose a valid room type and valid arrival and departure dates.');
+    return res.redirect('/listings/'+listing._id);
+  }
 
   if (
     (roomType === "AC" && listing.roomsAcAvailable <= 0) ||
@@ -67,13 +75,13 @@ router.post("/:id/book", isLoggedIn, async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
-        user: "ashu6260436@gmail.com",
-        pass: "juvlppqaoupqwupz", // ✅ App password
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASSWORD,
       },
     });
 
     const mailOptions = {
-      from: '"Hotel Booking" <ashu6260436@gmail.com>',
+      from: process.env.MAIL_USER,
       to: user.email,
       subject: "Your Booking Confirmation",
       text: "Attached is your booking confirmation.",
@@ -99,7 +107,7 @@ router.post("/:id/book", isLoggedIn, async (req, res) => {
       res.redirect(`/bookings/${booking._id}/download`);
     });
   });
-});
+}));
 
 // download route 
 router.get("/:id/download", isLoggedIn, async (req, res) => {
@@ -130,6 +138,10 @@ router.post("/:id/cancel", isLoggedIn, async (req, res) => {
       return res.redirect("/profile");
     }
 
+    if (String(booking.user._id) !== String(req.user._id) || booking.status !== 'Booked') {
+      req.flash('error','This booking cannot be canceled by this account.');
+      return res.redirect('/profile');
+    }
     const listing = booking.listing;
 
     // Update room availability
@@ -174,13 +186,13 @@ router.post("/:id/cancel", isLoggedIn, async (req, res) => {
       const transporter = nodemailer.createTransport({
         service: "Gmail",
         auth: {
-          user: "ashu6260436@gmail.com",
-          pass: "juvlppqaoupqwupz",
+          user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASSWORD,
         },
       });
 
       const mailOptions = {
-        from: '"Hotel Booking" <your-email@gmail.com>',
+        from: process.env.MAIL_USER,
         to: booking.user.email,
         subject: "Booking Cancellation Confirmation",
         text: "Attached is your booking cancellation confirmation.",
@@ -232,9 +244,9 @@ router.get("/:id/cdownload", isLoggedIn, (req, res) => {
 });
 
 // DELETE canceled booking
-router.post('/:id/delete', async (req, res) => {
+router.post('/:id/delete', isLoggedIn, async (req, res) => {
   try {
-    await Booking.findByIdAndDelete(req.params.id);
+    await Booking.findOneAndDelete({_id:req.params.id,user:req.user._id,status:'Canceled'});
     req.flash('success', 'Canceled booking removed.');
     res.redirect('/profile');
   } catch (err) {

@@ -1,38 +1,9 @@
 <% layout("/layouts/boilerplate") %>
-<div class="row mt-3">
-    <h1 class="col-6 offset-3">SignUp on Property-Rental</h1>
-    <div class="col-6 offset-3">
-        <form action="/signup" method="POST" class="needs-validation" novalidate>
-            <div class="mb-3">
-                <label for="username" class="form-lable">Username</label>
-                <input type="text" name="username" id="username" class="form-control" required>
-                <div class="valid-feedback">
-                Looks good
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <label for="email" class="form-lable">Email</label>
-                <input type="email" name="email" id="email" class="form-control" required>
-              </div>
-
-              
-              <div class="mb-3">
-                <label for="password" class="form-lable">Password</label>
-                <input type="password" name="password" id="password" class="form-control" required>
-              </div>
-
-              <button class="btn btn-success">SignUp</button>
-              <hr>
-              <div class="text-center">
-                <p>Or sign up with:</p>
-                <a href="/auth/google" class="btn btn-danger">
-                  <i class="fab fa-google"></i> Sign Up with Google
-                </a>
-                <a href="/auth/facebook" class="btn btn-primary">
-                  <i class="fab fa-facebook"></i> Sign Up with Facebook
-                </a>
-              </div>
-        </form>
-    </div>
-</div>
+<section class="auth-panel"><h1>Welcome to Property Rental</h1><p class="muted">Your next great stay starts here.</p>
+<form action="/signup" method="POST" class="needs-validation">
+<label for="username">Username</label><input type="text" name="username" id="username" autocomplete="username" class="form-control" required>
+<label for="email">Email</label><input type="email" name="email" id="email" autocomplete="email" class="form-control" required>
+<label for="password">Password</label><input type="password" name="password" id="password" autocomplete="new-password" class="form-control" required minlength="8">
+<button class="reserve-button">Create account</button></form>
+<div class="social-auth"><% if(typeof oauthProviders !== 'undefined' && oauthProviders.google){ %><a class="outline-button" href="/auth/google"><i class="fab fa-google" aria-hidden="true"></i>Continue with Google</a><% } %><% if(typeof oauthProviders !== 'undefined' && oauthProviders.facebook){ %><a class="outline-button" href="/auth/facebook"><i class="fab fa-facebook" aria-hidden="true"></i>Continue with Facebook</a><% } %></div>
+<p class="mt-4 mb-0">Already have an account? <a href="/login">Log in</a></p></section>

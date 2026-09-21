@@ -1,34 +1,30 @@
-<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/listings"><i class="fa-solid fa-compass"></i></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-link" href="/listings">Explore</a>
+<header class="site-header">
+<nav class="header-inner" aria-label="Main navigation">
+  <a class="brand" href="/" aria-label="Property Rental home">
+    <svg viewBox="0 0 34 38" aria-hidden="true"><path d="M17 3c-3 0-4.5 4-6 7L3 28c-3 7 3 10 8 6l6-6 6 6c5 4 11 1 8-6L23 10c-1.5-3-3-7-6-7Zm0 25c-8-7-6-13 0-13s8 6 0 13Z" fill="none" stroke="currentColor" stroke-width="2.2"/></svg><span>airbnb</span>
+  </a>
+  <form class="header-search" action="/listings" method="GET" role="search">
+    <img class="search-house" src="/images/reference/searchbar-house.png" alt="">
+    <label class="visually-hidden" for="destination">Search destinations</label>
+    <input id="destination" type="search" name="location" placeholder="Anywhere" value="<%= typeof location !== 'undefined' ? location : '' %>">
+    <span class="search-divider"></span><span class="search-caption">Anytime</span>
+    <span class="search-divider"></span><span class="search-caption muted">Add guests</span>
+    <button class="search-submit" aria-label="Search properties"><%- include('icon', {name:'search'}) %></button>
+  </form>
+  <div class="header-actions">
+    <a class="host-link" href="/listings/new">Become a host</a>
+    <button class="circle-button" type="button" data-dialog-open="locale-dialog" aria-label="Language and currency"><%- include('icon', {name:'globe'}) %></button>
+    <details class="account-menu">
+      <summary class="circle-button" aria-label="Account menu"><%- include('icon', {name:'menu'}) %></summary>
+      <div class="account-dropdown">
+        <% if (!currUser) { %><a href="/signup">Sign up</a><a href="/login">Log in</a><% } else { %><a href="/profile">Your profile</a><a href="/owner/bookings">Your bookings</a><a href="/logout">Log out</a><% } %>
+        <hr><a href="/listings">Explore homes</a><a href="/listings/new">Airbnb your home</a><a href="/design-reference">Assignment preview</a>
       </div>
-      <div class="mx-auto" style="width: 40%;">
-        <form class="d-flex justify-content-center" role="search" action="/listings" method="GET">
-          <input class="form-control me-2 rounded-pill text-center" type="search" name="location"
-            placeholder="Search by location" aria-label="Search" />
-          <button class="btn btn-danger rounded-pill px-4" type="submit">
-            Search
-          </button>
-        </form>
-      </div>
-
-      <div class="navbar-nav ms-auto">
-        <a class="nav-link" href="/listings/new">Create your Listing</a>
-        <% if(!currUser){ %>
-        <a class="nav-link " href="/signup"><b>Sign up</b></a>
-        <a class="nav-link" href="/login"><b>Log in</b></a>
-        <% } %>
-        <% if (currUser) { %>
-        <a class="nav-link" href="/profile"><b>Profile</b></a>
-        <a class="nav-link" href="/logout"><b>Log-out</b></a>
-        <% } %>
-      </div>
-    </div>
+    </details>
   </div>
 </nav>
+</header>
+<dialog id="locale-dialog" class="small-dialog" aria-labelledby="locale-title">
+  <button type="button" class="circle-button" data-dialog-close aria-label="Close"><%- include('icon', {name:'close'}) %></button>
+  <h2 id="locale-title">Language and region</h2><p>English · India</p><h3>Currency</h3><p>Indian rupee · INR ₹</p>
+</dialog>

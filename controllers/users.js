@@ -7,14 +7,14 @@ module.exports.getSignUp =  (req,res) => {
 }
 
 //post route for signup 
-module.exports.postSingnUp = async (req,res) => {
+module.exports.postSingnUp = async (req,res,next) => {
     try{
     let {username, email, password} = req.body;
     const newUser = new User({email,username});
     const registerdUser = await User.register(newUser,password);
     req.login(registerdUser, (err) =>{
         if(err){
-            return next();
+            return next(err);
         }
         req.flash("success","Welcome to Property-Rental");
         res.redirect("/listings");

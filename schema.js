@@ -1,6 +1,7 @@
 const Joi = require("joi");
 
 module.exports.listingSchema = Joi.object({
+    galleryRoom: Joi.string().max(80).allow(''),
     listing : Joi.object({
         title: Joi.string().required(),
         description: Joi.string().required(),

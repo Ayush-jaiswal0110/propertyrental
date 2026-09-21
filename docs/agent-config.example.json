@@ -1,0 +1,9 @@
+{
+  "purpose": "Optional review roles for future explicitly authorised parallel work; not executed in this implementation",
+  "sharedInstructions": "docs/workflows/design-review/SKILL.md",
+  "roles": [
+    {"name": "visual-review", "scope": "Read-only comparison of listing, tour and lightbox at desktop sizes", "output": "Concrete visual discrepancies with evidence"},
+    {"name": "interaction-review", "scope": "Read-only keyboard, focus, history and reduced-motion checks", "output": "Reproducible interaction failures"},
+    {"name": "code-quality", "scope": "Changed routes, escaping, authorisation and test coverage", "output": "Actionable findings; do not edit or publish"}
+  ]
+}
